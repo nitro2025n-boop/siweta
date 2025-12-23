@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wesołych Świąt</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-black: #0a0a0a;
+            --color-dark-green: #1a3d2e;
+            --color-burgundy: #6b1f2f;
+            --color-gold: #d4af37;
+            --color-red-accent: #8b2635;
+            --color-light-gold: #f4e4bc;
+            --color-dark: #1a1a1a;
+            --color-text-light: #e8e8e8;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background-color: var(--color-black);
+            color: var(--color-text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        body.start-screen-active {
+            overflow: hidden;
+        }
+
+        body.start-screen-active .main-content {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Title Section */
+        .title-section {
+            text-align: center;
+            padding: 4rem 2rem 3rem;
+        }
+
+        h1 {
+            font-size: 5rem;
+            color: var(--color-gold);
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.8), 
+                         2px 2px 10px rgba(0, 0, 0, 0.8);
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1s ease;
+        }
+
+        .greeting-text {
+            font-size: 1.5rem;
+            color: var(--color-light-gold);
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.8);
+            letter-spacing: 2px;
+            margin-top: 1rem;
+            animation: fadeInUp 1.2s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Gallery Section */
+        .gallery {
+            padding: 2rem 0;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            aspect-ratio: 4/3;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+            border-color: var(--color-gold);
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        /* Lightbox Modal */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            width: auto;
+            height: auto;
+            display: block;
+            border: 3px solid var(--color-gold);
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.5);
+            border-radius: 10px;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: -50px;
+            right: 0;
+            background: none;
+            border: none;
+            color: var(--color-gold);
+            font-size: 3rem;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .lightbox-close:hover {
+            transform: scale(1.2);
+            color: var(--color-light-gold);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 3rem;
+                letter-spacing: 4px;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .title-section {
+                padding: 3rem 1rem 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2.5rem;
+                letter-spacing: 3px;
+            }
+
+            .greeting-text {
+                font-size: 1rem;
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+        }
+
+        /* Start Screen */
+        .start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .start-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .start-screen-content {
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .start-screen-content:hover {
+            transform: scale(1.05);
+        }
+
+        .start-screen-content img {
+            max-width: 80vw;
+            max-height: 80vh;
+            width: auto;
+            height: auto;
+            display: block;
+        }
+    </style>
+</head>
+<body class="start-screen-active">
+    <!-- Start Screen -->
+    <div class="start-screen" id="startScreen">
+        <div class="start-screen-content">
+            <img src="3/zxczxczx.png" alt="Start">
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+    <div class="container">
+        <!-- Title Section -->
+        <div class="title-section">
+            <h1>Wesołych Świąt</h1>
+            <p class="greeting-text">Klaudia życzę ci wesołych świąt - Marcin</p>
+        </div>
+
+        <!-- Gallery Section -->
+        <div class="gallery">
+            <div class="gallery-grid" id="galleryGrid">
+                <!-- Images from folder 1 -->
+                <div class="gallery-item" data-image="1/IMG_4880.png">
+                    <img src="1/IMG_4880.png" alt="Galeria">
+                </div>
+                <div class="gallery-item" data-image="1/IMG_4882.png">
+                    <img src="1/IMG_4882.png" alt="Galeria">
+                </div>
+                <div class="gallery-item" data-image="1/IMG_4883.png">
+                    <img src="1/IMG_4883.png" alt="Galeria">
+                </div>
+                
+                <!-- Images from folder podryw -->
+                <div class="gallery-item" data-image="podryw/IMG_4886.png">
+                    <img src="podryw/IMG_4886.png" alt="Galeria">
+                </div>
+                <div class="gallery-item" data-image="podryw/IMG_4887.png">
+                    <img src="podryw/IMG_4887.png" alt="Galeria">
+                </div>
+                <div class="gallery-item" data-image="podryw/IMG_4888.png">
+                    <img src="podryw/IMG_4888.png" alt="Galeria">
+                </div>
+                <div class="gallery-item" data-image="podryw/IMG_4889.png">
+                    <img src="podryw/IMG_4889.png" alt="Galeria">
+                </div>
+                <div class="gallery-item" data-image="podryw/IMG_4890.png">
+                    <img src="podryw/IMG_4890.png" alt="Galeria">
+                </div>
+                <div class="gallery-item" data-image="podryw/IMG_4891.png">
+                    <img src="podryw/IMG_4891.png" alt="Galeria">
+                </div>
+                <div class="gallery-item" data-image="podryw/IMG_4892.png">
+                    <img src="podryw/IMG_4892.png" alt="Galeria">
+                </div>
+                <div class="gallery-item" data-image="podryw/IMG_4897.png">
+                    <img src="podryw/IMG_4897.png" alt="Galeria">
+                </div>
+                <div class="gallery-item" data-image="podryw/IMG_4898.png">
+                    <img src="podryw/IMG_4898.png" alt="Galeria">
+                </div>
+                <div class="gallery-item" data-image="podryw/IMG_4899.png">
+                    <img src="podryw/IMG_4899.png" alt="Galeria">
+                </div>
+                <div class="gallery-item" data-image="podryw/IMG_4900.png">
+                    <img src="podryw/IMG_4900.png" alt="Galeria">
+                </div>
+                <div class="gallery-item" data-image="podryw/IMG_4902.png">
+                    <img src="podryw/IMG_4902.png" alt="Galeria">
+                </div>
+                <div class="gallery-item" data-image="podryw/IMG_4903.png">
+                    <img src="podryw/IMG_4903.png" alt="Galeria">
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <!-- End Main Content -->
+
+    <!-- Audio Player -->
+    <audio id="backgroundAudio" loop preload="auto">
+        <source src="mp3/Piggery - QuickSounds.com.mp3" type="audio/mpeg">
+        <source src="mp3/Piggery%20-%20QuickSounds.com.mp3" type="audio/mpeg">
+        <source src="mp3/piggery.mp3" type="audio/mpeg">
+        <source src="mp3/music.mp3" type="audio/mpeg">
+        Twoja przeglądarka nie obsługuje odtwarzacza audio.
+    </audio>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <button class="lightbox-close" id="lightboxClose">&times;</button>
+            <img src="" alt="" id="lightboxImage">
+        </div>
+    </div>
+
+    <script>
+        // Background Audio - play automatically when page loads (after start screen)
+        const backgroundAudio = document.getElementById('backgroundAudio');
+        
+        // Set volume to 50%
+        if (backgroundAudio) {
+            backgroundAudio.volume = 0.5;
+        }
+        
+        // Play audio when start screen is closed
+        function playBackgroundAudio() {
+            if (backgroundAudio) {
+                // Check if audio can play
+                const playPromise = backgroundAudio.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        console.log('Audio playing successfully');
+                    }).catch(error => {
+                        console.error('Error playing audio:', error);
+                        console.log('File path:', backgroundAudio.src);
+                        // Show error to user
+                        alert('Nie można odtworzyć pliku audio. Sprawdź czy plik MP3 istnieje w folderze mp3/');
+                    });
+                }
+            } else {
+                console.error('Audio element not found');
+            }
+        }
+
+        // Lightbox functionality
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightboxImage');
+        const lightboxClose = document.getElementById('lightboxClose');
+        const galleryItems = document.querySelectorAll('.gallery-item');
+
+        galleryItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const imageSrc = item.getAttribute('data-image');
+                lightboxImage.src = imageSrc;
+                lightbox.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        lightboxClose.addEventListener('click', closeLightbox);
+        
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) {
+                closeLightbox();
+            }
+        });
+
+        // Close lightbox on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+                closeLightbox();
+            }
+        });
+
+        // Start Screen functionality
+        const startScreen = document.getElementById('startScreen');
+        const startScreenContent = startScreen.querySelector('.start-screen-content');
+
+        function closeStartScreen() {
+            startScreen.classList.add('hidden');
+            document.body.classList.remove('start-screen-active');
+            // Start playing audio when start screen closes
+            playBackgroundAudio();
+        }
+
+        // Click on image to close start screen and show main page
+        startScreenContent.addEventListener('click', () => {
+            closeStartScreen();
+        });
+
+        // Close start screen on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !startScreen.classList.contains('hidden')) {
+                closeStartScreen();
+            }
+        });
+    </script>
+</body>
+</html>
